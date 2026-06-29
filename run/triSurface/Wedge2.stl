@@ -1,0 +1,30 @@
+solid wedge2
+ facet normal -0 0 1
+  outer loop
+   vertex -3.33067e-18 -0.0045 0
+   vertex 0 -0.0225 0
+   vertex 0.0063542 -0.0045 0
+  endloop
+ endfacet
+ facet normal 0 0 1
+  outer loop
+   vertex 0.0063542 -0.0045 0
+   vertex 0 -0.0225 0
+   vertex 0.04 -0.0225 0
+  endloop
+ endfacet
+ facet normal -0 0 1
+  outer loop
+   vertex 0.0063542 -0.0045 0
+   vertex 0.04 -0.0225 0
+   vertex 0.04 0 0
+  endloop
+ endfacet
+ facet normal 0 0 1
+  outer loop
+   vertex 0.04 0 0
+   vertex 0.0063542 0 0
+   vertex 0.0063542 -0.0045 0
+  endloop
+ endfacet
+endsolid wedge2

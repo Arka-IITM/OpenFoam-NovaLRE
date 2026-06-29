@@ -1,0 +1,112 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2406                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
+}
+
+
+Fluid.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+fuel_inletfull.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+fuel_inlethalf.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+oxidiser.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+Walls.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+Outlet.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+Wedge1.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+Wedge2.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}

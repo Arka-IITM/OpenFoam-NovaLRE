@@ -1,0 +1,60 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+phases (liquid air);
+
+liquid
+{
+    transportModel  Newtonian;
+
+    nu              1e-06;
+
+    rho             1000;
+}
+
+air
+{
+    transportModel  Newtonian;
+
+    nu              8e-07;
+
+    rho             23;
+}
+KProperties
+{
+	rho1Intercept	1425.26;
+	rho1Slope	-528.76;
+
+	mu1Eth		1.59e-03;
+	mu1H2O2 	1.26e-03;
+
+	sigmaIntercept	0.0799;
+	sigmaSlope	-0.0519;
+
+	sigmaCubic       0.01973518;   // K^3 coeff, N/m -- Parachor-method fit (Sugden), see notes
+        sigmaQuad        -0.04875952;  // K^2 coeff, N/m
+    	sigmaLin         -0.01634568;  // K^1 coeff, N/m
+        sigmaConst        0.07717014;  // K^0 coeff, N/m (= sigma at K=0, i.e. ~98% H2O2/water)
+}
+
+
+
+
+sigma   0.04;
+
+
+// ************************************************************************* //

@@ -1,0 +1,25 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1806                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      turbulenceProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// WALE crashes at t~7.3us via pow3(mag(Sd)) when a parasitic surface-tension
+// current drives one interface cell to extreme velocity (Co >> 1 at dt->0).
+// Turbulence has not established at this early startup phase (liquid fraction
+// ~3.7e-6); laminar is physically correct here and removes the WALE feedback
+// that was amplifying the runaway velocity.  Re-enable LES once the jet forms.
+simulationType  laminar;
+
+// ************************************************************************* //

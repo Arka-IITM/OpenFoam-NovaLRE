@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      nut;
+}
+
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    ox
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+    FuelF
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+    FuelH
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+    Outlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+
+    Wedge1
+    {
+        type            symmetry;
+    }
+
+    Wedge2
+    {
+        type            symmetry;
+    }
+
+    Walls
+    {
+        type            nutUWallFunction;
+        value           uniform 0;
+    }
+}

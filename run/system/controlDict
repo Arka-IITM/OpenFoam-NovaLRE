@@ -1,0 +1,51 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     atomizationFoam;
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.001;      // 20 ms physical time (enough for flow establishment)
+
+// Adaptive time-jjjjjjjj
+deltaT          2e-4;
+adjustTimeStep  yes;
+maxCo           10;
+maxAlphaCo      10;
+maxDeltaT       2e-7;
+
+// Write control
+writeControl    adjustableRunTime;
+writeInterval   2e-5;      // Write every 0.5 ms (40 snapshots total)
+purgeWrite      5;         // Keep only last 5 time dirs to save disk
+writeFormat     binary;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable yes;
+fileHandler     masterUncollated;   // master reads system/ files; fixes mid-run edits in parallel
+
+profiling
+{
+    active      true;
+    cpuInfo     true;
+    memInfo     false;
+    sysInfo     false;
+}
+
+// ************************************************************************* //

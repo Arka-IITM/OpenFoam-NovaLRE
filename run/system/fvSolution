@@ -1,0 +1,113 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  plus                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    "alpha.liquid.*"
+    {
+        isoFaceTol      1e-8;
+        surfCellTol     1e-6;
+        nAlphaBounds    10; // increased from 3; more sweeps keep alpha closer to [0,1]
+        snapTol         1e-12;
+        clip            true;
+
+        reconstructionScheme isoAlpha;
+
+        nAlphaCorr      1;
+        nAlphaSubCycles 1;  // interface CFL ~0.3 at level-4; 1 subcycle sufficient
+        cAlpha          1;
+    }
+
+    "pcorr.*"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-6;
+        relTol          0;
+    }
+
+    p_rgh
+    {
+        solver              GAMG;
+        smoother            DICGaussSeidel;
+        tolerance           1e-07;
+        relTol              0.1;
+        nCellsInCoarsestLevel 20;
+        directSolveCoarsest yes;
+    }
+
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0;
+    }
+
+    U
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-06;
+        relTol          0.0;
+    }
+
+    UFinal
+    {
+        $U;
+        relTol          0;
+    }
+
+    K
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-07;
+        relTol          0.1;
+        maxIter         500;
+        minIter         2;
+    }
+
+    KFinal
+    {
+        $K;
+        tolerance       1e-07;
+        relTol          0.01;
+        maxIter         500;
+        minIter         2;
+    }
+
+
+}
+
+PIMPLE
+{
+    momentumPredictor no;
+    nOuterCorrectors  1;
+    nCorrectors       2;
+    nNonOrthogonalCorrectors 1;
+    pRefCell    0;
+    pRefValue   2000000;
+}
+
+relaxationFactors
+{
+    equations
+    {
+        K       0.5;
+    }
+}
+
+// ************************************************************************* //

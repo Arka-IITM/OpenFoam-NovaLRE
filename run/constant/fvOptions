@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Parasitic surface-tension currents at the VOF interface produce spurious
+// velocities that collapse the adaptive time step. Physical jet inlet is 9.5 m/s.
+// Cap at 20 m/s (2x physical) to suppress parasitic runaway while keeping
+// dt = maxCo * dx_min / 20 ≈ 3.5e-8 s (~15x larger than cap at 300 m/s).
+velocityLimiter
+{
+    type            limitVelocity;
+    active          yes;
+    selectionMode   all;
+    max             60;         // [m/s] — ~1.2x fuel jet (29 m/s), suppresses parasitic currents
+}
+
+// ************************************************************************* //

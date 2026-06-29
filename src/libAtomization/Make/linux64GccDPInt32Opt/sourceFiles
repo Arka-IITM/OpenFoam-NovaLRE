@@ -1,0 +1,9 @@
+SOURCE = \
+droplet/droplet.C \
+droplet/dropletIO.C \
+dropletCloud/dropletCloud.C \
+dropletCloud/breakupModel.C \
+dropletCloud/collisionModel.C \
+phaseCoupling/phaseCoupling.C \
+
+# sources

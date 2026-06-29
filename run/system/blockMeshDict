@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 0.001;
+
+
+vertices
+(
+    (-5 -27.5 -5)   // 0  — small buffer upstream of injector face
+    ( 45 -27.5 -5)   // 1
+    ( 45  5 -5)   // 2
+    (-5  5 -5)   // 3
+    (-5 -27.5 27.5)  // 4  — 180mm domain + 5mm buffer past throat
+    ( 45 -27.5  27.5)  // 5
+    ( 45  5 27.5)  // 6
+    (-5  5 27.5)  // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (25 17 17) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    backgroundFaces
+    {
+        type patch;
+        faces ((0 1 2 3)(4 5 6 7)(0 1 5 4)(1 2 6 5)(2 3 7 6)(3 0 4 7));
+    }
+);
+
+//*************************************************************************//
