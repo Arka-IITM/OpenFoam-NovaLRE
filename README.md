@@ -6,6 +6,7 @@
 - Conversion of small VoF elements to Lagrangian parcels to reduce computational cost
 - Support for
   - Particle-particle interaction (collision, coalescence) and secondary breakup
+  - Multiple fluids
   - Adaptive mesh refinement
   - Fully parallelized
 - Based on interIsoFoam in [OpenFOAM v2212](https://www.openfoam.com).
