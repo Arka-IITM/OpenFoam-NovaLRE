@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      binary;
+    class       volScalarField;
+    location    "0";
+    object      epsilon;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -3 0 0 0 0];
+
+internalField   uniform 1000;
+
+boundaryField
+{
+    Wall
+    {
+        type            epsilonWallFunction;
+        value           uniform 1000;
+    }
+    fluid-for-engine-interior-for-3d-cad:1
+    {
+        type            epsilonWallFunction;
+        value           uniform 1000;
+    }
+    fuelInlet
+    {
+        type            turbulentMixingLengthDissipationRateInlet;
+        mixingLength    0.00098;
+        value           uniform 1000;
+    }
+    oxidiserInlet
+    {
+        type            turbulentMixingLengthDissipationRateInlet;
+        mixingLength    0.00098;
+        value           uniform 1000;
+    }
+    wedge_pos
+    {
+        type            symmetry;
+    }
+    wedge_neg
+    {
+        type            symmetry;
+    }
+    Outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 1000;
+        value           uniform 1000;
+    }
+}
+
+
+// ************************************************************************* //

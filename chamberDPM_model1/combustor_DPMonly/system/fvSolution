@@ -1,0 +1,146 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  fvSolution
+  Pintle injector DPM simulation
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    // Pressure (PIMPLE loop)
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-6;
+        relTol          0.01;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 20;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+        tolerance       1e-6;
+    }
+
+    p_rgh
+    {
+        $p;
+    }
+
+    p_rghFinal
+    {
+        $pFinal;
+    }
+
+    // Velocity
+    "(U|UFinal)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0.01;
+    }
+
+    UFinal
+    {
+        $U;
+        relTol          0;
+    }
+
+    // Energy equation
+    "(h|hFinal|e|eFinal)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0.01;
+    }
+
+    hFinal
+    {
+        $h;
+        relTol          0;
+    }
+
+    // Turbulence
+    "(k|epsilon|omega|kFinal|epsilonFinal)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0.01;
+    }
+
+    // Species transport
+    "(Yi|YiFinal)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0.01;
+    }
+
+    // Thermal diffusivity
+    "(alphat|alphatFinal)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0.01;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors        3;    // PIMPLE outer loops
+    nCorrectors             2;    // PISO inner pressure correctors
+    nNonOrthogonalCorrectors 1;
+
+    momentumPredictor       yes;
+    transonic               no;
+
+    // Residual control (optional - use for steady-state convergence check)
+    residualControl
+    {
+        p               1e-4;
+        U               1e-4;
+        h               1e-4;
+        k               1e-4;
+        epsilon         1e-4;
+    }
+}
+
+relaxationFactors
+{
+    // Under-relaxation for outer PIMPLE iterations
+    fields
+    {
+        p               0.3;
+        p_rgh           0.3;
+        rho             0.1;
+    }
+    equations
+    {
+        U               0.7;
+        h               0.7;
+        k               0.7;
+        epsilon         0.7;
+        Yi              0.7;
+    }
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

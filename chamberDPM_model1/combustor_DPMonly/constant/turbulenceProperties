@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  turbulenceProperties
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+simulationType      RAS;
+
+RAS
+{
+    // k-epsilon: robust for high-Reynolds swirling/recirculating flows
+    // For improved accuracy in the recirculation zone, consider switching to
+    // realizable k-epsilon or k-omega SST after initial convergence.
+    
+    RASModel        kEpsilon;   
+
+    turbulence      on;
+    printCoeffs     on;
+
+    kEpsilonCoeffs
+    {
+        Cmu             0.09;
+        C1              1.44;
+        C2              1.92;
+        C3              -0.33;      // Buoyancy production (small effect here)
+        sigmak          1.0;
+        sigmaEps        1.3;
+    }
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

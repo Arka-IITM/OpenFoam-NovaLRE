@@ -1,0 +1,26 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  chemistryProperties
+  Chemistry is OFF — no combustion in this simulation.
+  Ethanol droplets evaporate and mix but do not react.
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      chemistryProperties;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+chemistryType
+{
+    solver          none;   // No ODE chemistry solver
+    method          none;
+}
+
+chemistry           off;    // <<< COMBUSTION DISABLED
+
+initialChemicalTimeStep 1e-7;
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      binary;
+    class       volScalarField;
+    location    "0";
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+    Wall
+    {
+        type            zeroGradient;
+    }
+    fluid-for-engine-interior-for-3d-cad:1
+    {
+        type            zeroGradient;
+    }
+    fuelInlet
+    {
+        type            fixedValue;
+        value           uniform 300;
+    }
+    oxidiserInlet
+    {
+        type            fixedValue;
+        value           uniform 300;
+    }
+    wedge_pos
+    {
+        type            symmetry;
+    }
+    wedge_neg
+    {
+        type            symmetry;
+    }
+    Outlet
+    {
+        type            inletOutletTotalTemperature;
+        gamma           1.4;
+        T0              uniform 300;
+        value           uniform 300;
+    }
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,156 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  controlDict
+  Pintle injector DPM simulation
+  Solver: sprayFoam  (reactingParcelFoam with spray physics)
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Use sprayFoam: compressible, multiphase (gas + Lagrangian spray),
+// energy equation, species transport, no combustion (set reactions off in
+// chemistryProperties).
+application     sprayFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         0.020;       // 20 ms physical time (enough for flow establishment)
+
+// Adaptive time-stepping
+deltaT          1e-6;        // Initial time step [s]
+adjustTimeStep  yes;
+maxCo           0.5;         // Max Courant number (gas phase)
+maxDeltaT       1e-5;        // Maximum allowed time step [s]
+
+// Write control
+writeControl    adjustableRunTime;
+writeInterval   5e-4;        // Write every 0.5 ms (40 snapshots total)
+purgeWrite      5;           // Keep only last 5 time dirs to save disk
+writeFormat     binary;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable yes;
+
+// ============================================================
+//  FUNCTION OBJECTS
+// ============================================================
+
+functions
+{
+    // -- Residuals monitor --
+    residuals
+    {
+        type            solverInfo;
+        libs            ("libutilityFunctionObjects.so");
+        fields          (U p h k epsilon);
+        writeResiduals  yes;
+    }
+
+    // -- Mass flow rates at all patches --
+    massFlowInlet_ox
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            oxidiserInlet;
+        writeFields     no;
+        log             yes;
+    }
+
+    massFlowInlet_fu
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            fuelInlet;
+        writeFields     no;
+        log             yes;
+    }
+
+    massFlowOutlet
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        fields          (phi);
+        operation       sum;
+        regionType      patch;
+        name            Outlet;
+        writeFields     no;
+        log             yes;
+    }
+
+    // -- Patch-averaged quantities --
+    outletAverages
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        fields          (U T p);
+        operation       weightedAverage;
+        weightField     phi;
+        regionType      patch;
+        name            Outlet;
+        writeFields     no;
+        log             yes;
+    }
+
+    // -- Volume-averaged gas temperature --
+    chamberTavg
+    {
+        type            volFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        fields          (T);
+        operation       volAverage;
+        regionType      all;
+        log             yes;
+    }
+
+    // -- Wall y+ for turbulence quality check --
+    yPlus
+    {
+        type            yPlus;
+        libs            ("libfieldFunctionObjects.so");
+        writeFields     yes;
+    }
+
+    // -- Particle statistics --
+    cloudInfo
+    {
+        type            particleInfo;
+        libs            ("liblagrangianFunctionObjects.so");
+        clouds          (kinematicCloud);
+        log             yes;
+    }
+
+    // -- Probe points for time-series extraction --
+    probes
+    {
+        type            probes;
+        libs            ("libsampling.so");
+        fields          (U p T);
+        probeLocations
+        (
+            ( 0.010 0.000 0.020 )  // Near injector, mid-radius
+            ( 0.025 0.000 0.060 )  // Mid-chamber
+            ( 0.040 0.000 0.140 )  // Near outlet, outer radius
+            // update coords based on step file
+        );
+    }
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

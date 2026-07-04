@@ -185,7 +185,14 @@ int main(int argc, char *argv[])
 
             #include "KEqn.H"
 
-            rho1Field = rho1Intercept + rho1Slope*K;
+            // Volume-additive density: 1/rho = w_EtOH/rhoEthanol + w_H2O2/rhoH2O2 + w_H2O/rhoWater
+            rho1Field =
+                scalar(1.0)
+               /(
+                    scalar(0.7)*K/rhoEthanol
+                  + scalar(0.98)*(scalar(1.0) - K)/rhoH2O2
+                  + (scalar(0.02) + scalar(0.28)*K)/rhoWater
+                );
 
             logMu1Field = K*logMu1Eth + (1.0 - K)*logMu1H2O2;
             mu1Field = exp(logMu1Field)*unitDynVisc;

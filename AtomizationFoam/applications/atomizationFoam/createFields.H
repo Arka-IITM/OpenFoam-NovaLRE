@@ -58,24 +58,42 @@ volScalarField K
 Info<< "Reading KProperties\n" << endl;
 const dictionary& KProperties = mixture.subDict("KProperties");
 
-dimensionedScalar rho1Intercept
+// Pure-component densities for the volume-additive mixing rule
+// 1/rho1 = w_EtOH/rhoEthanol + w_H2O2/rhoH2O2 + w_H2O/rhoWater
+// with mass fractions:  w_EtOH = 0.7*K,  w_H2O2 = 0.98*(1-K),  w_H2O = 0.02+0.28*K
+dimensionedScalar rhoEthanol
 (
-    "rho1Intercept",
+    "rhoEthanol",
     dimMass/dimVolume,
     KProperties
 );
 
-dimensionedScalar rho1Slope
+dimensionedScalar rhoH2O2
 (
-    "rho1Slope",
+    "rhoH2O2",
     dimMass/dimVolume,
     KProperties
 );
 
-// Liquid-phase density as a linear function of K
-// rho1Field = rho1Intercept + rho1Slope*K
-// K=0 -> 98/2 H2O2/water (rho1Intercept)
-// K=1 -> 70/30 ethanol/water (rho1Intercept + rho1Slope)
+dimensionedScalar rhoWater
+(
+    "rhoWater",
+    dimMass/dimVolume,
+    KProperties
+);
+
+// Volume-additive (Amagat-type) liquid-phase density.
+// Assumes component volumes are additive on mixing, which is more
+// physically accurate than the simple linear rule for this ternary.
+// Mass fractions of each species as a function of K:
+//   ethanol : 0.70*K
+//   H2O2    : 0.98*(1-K)
+//   water   : 0.02 + 0.28*K
+// At K=0 -> ~98% H2O2 / 2% water  (~1427 kg/m^3 from the formula)
+// At K=1 -> 70% ethanol / 30% water (~868 kg/m^3 from the formula)
+//
+// NOTE: scalar(1.0) is dimensionless; dividing by the specific-volume
+// field [m^3/kg] recovers units of [kg/m^3].
 volScalarField rho1Field
 (
     IOobject
@@ -86,7 +104,12 @@ volScalarField rho1Field
         IOobject::NO_READ,
         IOobject::AUTO_WRITE
     ),
-    rho1Intercept + rho1Slope*K
+    scalar(1.0)
+   /(
+        scalar(0.7)*K/rhoEthanol
+      + scalar(0.98)*(scalar(1.0) - K)/rhoH2O2
+      + (scalar(0.02) + scalar(0.28)*K)/rhoWater
+    )
 );
 
 dimensionedScalar mu1Eth

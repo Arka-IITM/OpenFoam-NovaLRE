@@ -1,0 +1,185 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  reactingCloudProperties
+  Lagrangian multi-component spray cloud: ethanol (C2H5OH) + water (H2O) droplets
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      reactingCloudProperties;
+}
+
+type            sprayCloud;
+
+solution
+{
+    active          true;
+    coupled         true;       
+    transient       yes;
+    cellValueSourceCorrection on;
+    maxCo           0.3;        
+
+    sourceTerms
+    {
+        schemes
+        {
+            rho             explicit 1;
+            U               explicit 1;
+            Yi              explicit 1;
+            h               explicit 1;
+            radiation       none;
+        }
+    }
+
+    interpolationSchemes
+    {
+        rho             cell;
+        U               cellPoint;
+        mu              cell;
+        T               cell;
+        Cp              cell;
+        kappa           cell;
+        p               cell;
+        O2              cell;
+        H2O             cell;
+        N2              cell;
+        C2H5OH          cell;
+    }
+
+    integrationSchemes
+    {
+        U               Euler;
+        T               analytical;
+    }
+}
+
+constantProperties
+{
+    // --------------------------------------------------------
+    // REFERENCE PROPERTIES (Used as defaults or base values)
+    // --------------------------------------------------------
+    rho0            789;        // Liquid ethanol density reference [kg/m3]
+    T0              300;        // Initial droplet temperature [K]
+    Cp0             2440;       // Liquid ethanol Cp reference [J/kg/K]
+    epsilon0        1;          
+    f0              0.5;        
+    Pr              6.9;        
+    kappa0          0.167;
+    minParticleMass 1e-15;      
+
+    // --------------------------------------------------------
+    // LIQUID PROPERTIES - LIQUID ETHANOL (C2H5OH)
+    // --------------------------------------------------------
+    C2H5OHProps
+    {
+        Tb          351.44;     // Boiling point [K]
+        Tc          516.25;     // Critical temperature [K]
+        Pc          6.38e6;     // Critical pressure [Pa]
+        Vc          0.000167;   
+        Zc          0.248;      
+        omega       0.644;      
+    }
+
+    // --------------------------------------------------------
+    // LIQUID PROPERTIES - LIQUID WATER (H2O) at 20 bar
+    // --------------------------------------------------------
+    H2OProps
+    {
+        Tb          485.4;      // Boiling point at 20 bar [K]
+        Tc          647.14;     // Critical temperature [K]
+        Pc          22.06e6;    // Critical pressure [Pa]
+        Vc          5.59e-5;    
+        Zc          0.229;      
+        omega       0.344;      
+    }
+}
+
+subModels
+{
+    particleForces
+    {
+        sphereDrag;             
+        gravity;                
+    }
+
+    injectionModels
+    {
+        model1
+        {
+            type            coneInjection;
+            SOI             0;              
+            duration        1e9;            
+            position        ( 0.005 0.0 0.015 );   
+            direction       ( 1 0 0 );      
+
+            massFlowRate    table
+            (
+                ( 0     2.2727e-3 )   
+            );
+
+            parcelsPerSecond 10000;         
+            thetaInner      0;             
+            thetaOuter      35;             
+
+            // Define mass fractions of the liquid mixture being injected
+            // Example: 50% Ethanol, 50% Water by mass
+            liquidComponents
+            {
+                C2H5OH      0.5;
+                H2O         0.5;
+            }
+
+            sizeDistribution
+            {
+                type        RosinRammler;
+                RosinRammlerDistribution
+                {
+                    minValue    10e-6;      
+                    maxValue    500e-6;     
+                    d           100e-6;     
+                    n           3.5;        
+                }
+            }
+        }
+    }
+
+    dispersionModel stochasticDispersionRAS;
+
+    // --------------------------------------------------------
+    // MULTI-COMPONENT LIQUID EVAPORATION
+    // --------------------------------------------------------
+    evaporationModel
+    {
+        type            LiquidEvaporation;
+        enthalpyTransfer enthalpyDifference;
+        
+        // Tells OpenFOAM to evaluate liquid phase calculations for both
+        activeLiquids ( C2H5OH H2O );
+    }
+
+    heatTransferModel RanzMarshall;
+
+    RanzMarshallCoeffs
+    {
+        BirdCorrection   off;   
+    }
+
+    breakupModel    ReitzDiwakar;
+
+    ReitzDiwakarCoeffs
+    {
+        Cbag            6;
+        Cb              0.785;
+        Cstrip          0.5;
+        Cs              10;
+    }
+
+    surfaceFilmModel none;
+    collisionModel  none;
+    radiation       off;
+    stochasticCollisionModel none;
+}
+
+cloudFunctions
+{}

@@ -36,10 +36,16 @@ air
 }
 KProperties
 {
-	rho1Intercept	1425.26;
-	rho1Slope	-528.76;
+    // Pure-component densities [kg/m^3] used in the volume-additive mixing rule:
+    //   1/rho1 = 0.7*K/rhoEthanol + 0.98*(1-K)/rhoH2O2 + (0.02+0.28*K)/rhoWater
+    // K=0 -> ~98% H2O2 / 2% water liquid  (rho ~ 1427 kg/m^3)
+    // K=1 -> 70% ethanol / 30% water liquid (rho ~ 868 kg/m^3)
+    // Verify these against your reference data / EOS before production runs.
+    rhoEthanol      789.0;    // pure ethanol at ~20 °C, kg/m^3
+    rhoH2O2         1450.0;   // pure H2O2 at ~20 °C, kg/m^3
+    rhoWater        998.2;    // pure water at ~20 °C, kg/m^3
 
-	mu1Eth		1.59e-03;
+    mu1Eth		1.59e-03;
 	mu1H2O2 	1.26e-03;
 
 	sigmaIntercept	0.0799;

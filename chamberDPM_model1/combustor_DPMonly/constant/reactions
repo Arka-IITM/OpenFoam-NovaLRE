@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  reactions
+  No combustion reactions — this file defines species only.
+  Combustion is DISABLED in chemistryProperties (chemistry off).
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      reactions;
+}
+
+species
+(
+    O2
+    H2O
+    N2
+    C2H5OH
+);
+
+reactions
+{
+    // No reactions — combustion disabled
+    // To enable combustion in future: add reaction entries here
+    // e.g. stoichiometric ethanol combustion:
+    // C2H5OH + 3O2 = 2CO2 + 3H2O
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

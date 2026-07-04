@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  0/kinematicCloud/positions
+  Initial cloud: empty (injection starts at t=0 via cloudProperties)
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       vectorField;
+    object      positions;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+0()   // No initial particles; injected at SOI=0
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

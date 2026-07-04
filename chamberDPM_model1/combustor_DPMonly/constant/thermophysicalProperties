@@ -1,0 +1,135 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  OpenFOAM v13  |  thermophysicalProperties
+  Gas phase: mixture of O2, H2O (decomposed H2O2 products) + N2 (inert diluent
+  if needed). No combustion — reactions are disabled in chemistryProperties.
+
+  Using hPolynomial thermo for accurate Cp(T) over 300-3000 K range.
+  specie gives molecular weight, transport uses Sutherland law.
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      thermophysicalProperties;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+thermoType
+{
+    type            hePsiThermo;       // Compressible (psi-based)
+    mixture         reactingMixture;   // Multi-species mixture
+    transport       sutherland;        // Sutherland viscosity law
+    thermo          janaf;             // JANAF polynomials for Cp(T)
+    energy          sensibleEnthalpy;
+    equationOfState perfectGas;
+    specie          specie;
+}
+
+// Inert specie (last in the list - carries numerical residual)
+inertSpecie     N2;
+
+chemistryReader foamChemistryReader;
+foamChemistryFile "$FOAM_CASE/constant/reactions";
+
+// -----------------------------------------------------------------------
+//  Species thermodynamic data (JANAF format)
+//  Coefficients: a1..a7 (high T), a8..a14 (low T)
+//  Cp/R = a1 + a2*T + a3*T^2 + a4*T^3 + a5*T^4
+//  H/RT = a1 + a2/2*T + a3/3*T^2 + a4/4*T^3 + a5/5*T^4 + a6/T
+//  S/R  = a1*ln(T) + a2*T + a3/2*T^2 + a4/3*T^3 + a5/4*T^4 + a7
+// -----------------------------------------------------------------------
+
+species
+(
+    O2
+    H2O
+    N2
+    C2H5OH
+);
+
+O2
+{
+    specie
+    {
+        molWeight       31.9988;
+    }
+    thermodynamics
+    {
+        Tlow            200;
+        Thigh           6000;
+        Tcommon         1000;
+        highCpCoeffs    ( 3.69758 6.13520e-4 -1.25884e-7 1.77528e-11 -1.13644e-15 -1233.93 3.18917 );
+        lowCpCoeffs     ( 3.21294 1.12749e-3 -5.75615e-7 1.31388e-9  -8.76855e-13 -1005.25 6.03474 );
+    }
+    transport
+    {
+        As              1.693e-6;   // Sutherland constant [kg/(m s K^0.5)]
+        Ts              127.0;      // Sutherland temperature [K]
+    }
+}
+
+H2O
+{
+    specie
+    {
+        molWeight       18.01528;
+    }
+    thermodynamics
+    {
+        Tlow            200;
+        Thigh           6000;
+        Tcommon         1000;
+        highCpCoeffs    ( 2.67704 2.97319e-3 -7.73769e-7 9.44335e-11 -4.26900e-15 -29899.2 6.88255 );
+        lowCpCoeffs     ( 4.19864 -2.03643e-3 6.52040e-6 -5.48797e-9  1.77197e-12 -30293.7 -0.849032 );
+    }
+    transport
+    {
+        As              1.700e-6;
+        Ts              756.0;
+    }
+}
+
+N2
+{
+    specie
+    {
+        molWeight       28.0134;
+    }
+    thermodynamics
+    {
+        Tlow            200;
+        Thigh           6000;
+        Tcommon         1000;
+        highCpCoeffs    ( 2.95258 1.39690e-3 -4.92632e-7 7.86010e-11 -4.60755e-15 -923.949 5.87189 );
+        lowCpCoeffs     ( 3.53101 -1.23661e-4 -5.02999e-7 2.43531e-9  -1.40881e-12 -1046.98 2.96747 );
+    }
+    transport
+    {
+        As              1.458e-6;
+        Ts              110.4;
+    }
+}
+
+C2H5OH
+{
+    specie
+    {
+        molWeight       46.069;     // Molecular weight of Ethanol [g/mol]
+    }
+    thermodynamics
+    {
+        Tlow            200;
+        Thigh           5000;
+        Tcommon         1000;
+        highCpCoeffs    ( 6.902302e+0 1.258908e-2 -4.381395e-6 7.151167e-10 -4.502856e-14 -3.076846e+4 -1.047526e+1 );
+        lowCpCoeffs     ( 1.956501e+0 2.222306e-2 -1.144139e-5  4.062402e-9 -9.539828e-13 -2.923481e+4  1.564906e+1 );
+    }
+    transport
+    {
+        As              1.123e-6;   // Sutherland constant for ethanol [kg/(m s K^0.5)]
+        Ts              284.1;      // Sutherland temperature for ethanol [K]
+    }
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
